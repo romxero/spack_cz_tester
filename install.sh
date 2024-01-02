@@ -8,8 +8,16 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=2G
 
+
+if [ -z "${SLURM_CPUS_PER_TASK}" ]
+then 
+	CORECOUNT=4
+else
+	CORECOUNT=${SLURM_CPUS_PER_TASK} #grab the core count from slurm task
+fi
+
 #global variables
-CORECOUNT=${SLURM_CPUS_PER_TASK} #grab the core count from slurm task
+#CORECOUNT=${SLURM_CPUS_PER_TASK} #grab the core count from slurm task
 ARCH="x86_64" #this is the main target, select either x86_64, zen2, or skylake_avx512
 BASE_GCC_VERS=5.5.0 #the version of gcc that will be used to build other variations of gcc 
 
@@ -39,7 +47,7 @@ source spack/share/spack/setup-env.sh
 
 #install compilers 
 #fix was added due to zen2 not having optimizations w/ 4.8.5 compiler
-spack install -j${SLURM_CPUS_PER_TASK} gcc@${BASE_GCC_VERS} target=x86_64
+spack install -j${CORECOUNT} gcc@${BASE_GCC_VERS} target=x86_64
 
 
 #now add the compilers - gcc
