@@ -1,16 +1,16 @@
 packages:
   perl:
-    version: [5.32.1]
+    version: [5.38.0]
   python:
-    version: [3.8.11]
+    version: [3.12.0]
   berkeley-db:
     version: [18.1.40]
   gdbm:
-    version: [1.18.1]
+    version: [1.23]
   readline:
-    version: [8.1]
+    version: [8.2]
   ncurses:
-    version: [6.2]
+    version: [6.4]
   petsc:
     version: [3.15.0]
     variants: +hypre+fftw+mumps+hdf5
@@ -18,7 +18,7 @@ packages:
     version: [3.3.2]
   openmpi:
     variants: +pmi +legacylaunchers schedulers=slurm fabrics=ucx,ofi
-    version: [4.1.1]
+    version: [4.1.5]
   proj:
     version: [7.2.1]
   geos:
@@ -30,32 +30,14 @@ packages:
   boost:
     version: [1.75.0]
   cmake:
-    version: [3.20.1]
+    version: [3.27.8]
   emacs:
     variants: +tls
   fftw:
-    version: [3.3.9]
+    version: [3.3.10]
   hdf5:
     variants: ~cxx~debug+fortran+hl~java+mpi+pic+shared~szip+threadsafe
-    version: [1.12.0]
-  netcdf-c:
-    version: [4.7.4]
-  netcdf-cxx4:
-    version: [4.3.1]
-  netcdf-cxx:
-    version: [4.2]
-  netcdf-fortran:
-    version: [4.5.3]
-  parallel-netcdf:
-    version: [1.12.1]
-  parallelio:
-    version: [2_5_2]
-  muparser:
-    version: [2.2.6.1]
-  maven:
-    version: [3.6.3]
-  memsurfer:
-    version: [1.0]
+    version: [1.14.2]
   swig:
     version: [4.0.2]
   cgal:
@@ -68,27 +50,21 @@ packages:
     version: [1.9.10]
   vtk:
     version: [9.0.0]
-  dealii:
-    version: [9.2.0]
-  intel-oneapi-compilers:
-    version: [2021.2.0]
   blitz:
     version: [1.0.2]
   xios:
     version: [2.5]
   libxsmm:
     version: [1.16.1]
-  parmetis:
-    version: [4.0.3]
   all:
-    compiler: [gcc@10.1.0, intel@19.0.0.117]
+    compiler: [gcc@10.1.0]
     variants: build_type=Release +mpi
     providers:
-      mpi: [openmpi, mpich]
+      mpi: [openmpi]
       blas: [openblas]
       lapack: [openblas]
-      gl: [osmesa+opengl]
-      glx: [osmesa+glx]
+      gl: [osmesa]
+      glx: [osmesa]
       awk: [gawk]
       blas: [openblas]
       elf: [elfutils]
@@ -111,4 +87,4 @@ packages:
       uuid: [libuuid]
     permissions:
       read: world
-      write: user
+      write: group
