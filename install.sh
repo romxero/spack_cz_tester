@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -x #debug 
 #SBATCH --job-name=SpackBuilds
 #SBATCH --output=SpackBuilds_%A_%a.out
 #SBATCH --error=SpackBuilds_%A_%a.err
@@ -6,26 +7,15 @@
 #SBATCH --ntasks=1 # how to scale the following to multiple tasks?
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=2G
-#SBATCH -p serc,normal
-##SBATCH -C CPU_MNF:INTEL
-
-
-
-# This is the general install script for SERC on the Sherlock HPC system @ Stanford.
-# 
-#
-#
-#set -x #debug
-
 
 #global variables
-CORECOUNT=8 #main core count for compiling jobs
+CORECOUNT=${SLURM_CPUS_PER_TASK} #grab the core count from slurm task
 ARCH="x86_64" #this is the main target, select either x86_64, zen2, or skylake_avx512
+BASE_GCC_VERS=5.5.0 #the version of gcc that will be used to build other variations of gcc 
 
 #the compilers we will need.
 compilers=(
-    %gcc@10.1.0
-    %intel@2021.2.0
+    %gcc@13.1.0
 )
 
 mpis=(
@@ -33,19 +23,8 @@ mpis=(
     mpich
 )
 
-
-
-
-#This is the ccache stuff commented out its really for testing and debugging.
-#spack install -j${CORECOUNT} ccache
-#now put ccache in the path
-#CCACHE_PATH=`spack location --install-dir ccache`
-#export PATH=$PATH:${CCACHE_PATH}/bin
-
-
 #clone the spack repo into this current directory
-git clone https://github.com/spack/spack.git
-
+git clone -c feature.manyFiles=true https://github.com/spack/spack.git
 
 #backup old yaml files
 mv spack/etc/spack/defaults/packages.yaml spack/etc/spack/defaults/packages.yaml_bak
@@ -55,26 +34,17 @@ mv spack/etc/spack/defaults/modules.yaml spack/etc/spack/defaults/modules.yaml_b
 cp defaults/modules.yaml spack/etc/spack/defaults/modules.yaml
 cp defaults/packages.yaml spack/etc/spack/defaults/packages.yaml
 
-
 #source the spack environment
 source spack/share/spack/setup-env.sh
 
 #install compilers 
 #fix was added due to zen2 not having optimizations w/ 4.8.5 compiler
-spack install -j${CORECOUNT} gcc@10.1.0%gcc@4.8.5 target=x86_64
-spack install -j${CORECOUNT} intel-oneapi-compilers@2021.2.0%gcc@4.8.5 target=x86_64
+spack install -j${SLURM_CPUS_PER_TASK} gcc@${BASE_GCC_VERS} target=x86_64
+
 
 #now add the compilers - gcc
-spack compiler find `spack location --install-dir gcc@10.1.0`
-spack compiler find `spack location --install-dir gcc@10.1.0`/bin
-
-
-#icc
-spack compiler find `spack location --install-dir  intel-oneapi-compilers`/compiler/2021.2.0/linux/bin
-spack compiler find `spack location --install-dir  intel-oneapi-compilers`/compiler/2021.2.0/linux/bin/intel64
-
-
-
+spack compiler find `spack location --install-dir gcc@${BASE_GCC_VERS}`
+spack compiler find `spack location --install-dir gcc@${BASE_GCC_VERS}`/bin
 
 
 #############SOFTWARE INSTALL########################
